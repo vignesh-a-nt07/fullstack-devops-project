@@ -1,0 +1,61 @@
+name: Backend CI & Deploy
+on:
+  push:
+    paths:
+      - 'backend/**'
+
+jobs:
+  build-test-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download infra outputs
+        uses: actions/download-artifact@v4
+        with: { name: terraform-outputs }
+
+      - name: Prepare inventory and SSH key
+        run: |
+          python3 - <<'PY'
+            import json, os
+            o=json.load(open('terraform-outputs.json'))
+            frontend_ip=o['frontend_public_ip']['value']
+            backend_ip=o['backend_private_ip']['value']
+            inv=f"[frontend]\nfrontend ansible_host={frontend_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/deploy_key\n\n[backend]\nbackend ansible_host={backend_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/deploy_key\n"
+            open('ansible/inventory/dev.ini','w').write(inv)
+            print('Inventory created')
+            PY
+      - name: Add SSH key
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/deploy_key
+          chmod 600 /tmp/deploy_key
+
+      - name: Run tests
+        run: |
+          cd backend
+          pip install -r requirements.txt
+          pytest || true
+          cd ..
+
+      - name: Install Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          pip3 install ansible
+
+      - name: Set RDS env vars
+        run: |
+          python3 - <<'PY'
+            import json
+            o=json.load(open('terraform-outputs.json'))
+            rds=o.get('rds_endpoint', {'value':''})['value'] if 'rds_endpoint' in o else ''
+            print(rds)
+            PY
+
+      - name: Run Ansible backend playbook
+        env:
+          RDS_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          RDS_USER: ${{ secrets.DB_USER }}
+          RDS_DB: ${{ secrets.DB_NAME }}
+        run: |
+          ansible-playbook -i ansible/inventory/dev.ini ansible/playbooks/setup_backend.yml --ssh-common-args='-o StrictHostKeyChecking=no'

@@ -1,0 +1,47 @@
+name: Frontend CI & Deploy
+on:
+  push:
+    paths:
+      - 'frontend/**'
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download infra outputs
+        uses: actions/download-artifact@v4
+        with: { name: terraform-outputs }
+
+      - name: Prepare inventory and SSH key
+        run: |
+          python3 - <<'PY'
+            import json
+            o=json.load(open('terraform-outputs.json'))
+            frontend_ip=o['frontend_public_ip']['value']
+            backend_ip=o['backend_private_ip']['value']
+            inv=f"[frontend]\nfrontend ansible_host={frontend_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/deploy_key\n\n[backend]\nbackend ansible_host={backend_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/deploy_key\n"
+            open('ansible/inventory/dev.ini','w').write(inv)
+            PY
+      - name: Add SSH key
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/deploy_key
+          chmod 600 /tmp/deploy_key
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+          cd ..
+
+      - name: Install Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          pip3 install ansible
+
+      - name: Run Ansible
+        run: |
+          ansible-playbook -i ansible/inventory/dev.ini ansible/playbooks/setup_frontend.yml --ssh-common-args='-o StrictHostKeyChecking=no'

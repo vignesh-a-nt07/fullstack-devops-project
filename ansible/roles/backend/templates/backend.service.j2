@@ -1,0 +1,14 @@
+[Unit]
+Description=FastAPI backend
+After=network.target
+
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/opt/backend
+Environment="DATABASE_URL=postgresql://{{ rds_user }}:{{ rds_password }}@{{ rds_host }}:{{ rds_port }}/{{ rds_db }}"
+ExecStart=/opt/backend/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

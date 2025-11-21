@@ -1,0 +1,9 @@
+- hosts: frontend
+  vars:
+    frontend_build_path: ../frontend/dist
+  tasks:
+    - name: Set backend_private_ip var
+      set_fact:
+        backend_private_ip: "{{ hostvars['backend'].ansible_host }}"
+  roles:
+    - role: web

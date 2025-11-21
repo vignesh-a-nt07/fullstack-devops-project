@@ -1,0 +1,39 @@
+- include_role: name: common
+
+- name: Create backend directory
+  file:
+    path: /opt/backend
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    mode: '0755'
+
+- name: Copy backend code
+  copy:
+    src: "{{ backend_code_path }}/"
+    dest: /opt/backend/
+    owner: ubuntu
+    group: ubuntu
+
+- name: Create python venv
+  command: python3 -m venv /opt/backend/venv creates=/opt/backend/venv
+
+- name: Install pip requirements
+  pip:
+    requirements: /opt/backend/requirements.txt
+    virtualenv: /opt/backend/venv
+
+- name: Deploy systemd service
+  template:
+    src: backend.service.j2
+    dest: /etc/systemd/system/backend.service
+    mode: '0644'
+
+- name: Reload systemd
+  command: systemctl daemon-reload
+
+- name: Enable and start backend
+  systemd:
+    name: backend
+    state: restarted
+    enabled: yes

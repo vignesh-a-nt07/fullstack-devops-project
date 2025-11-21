@@ -1,0 +1,6 @@
+ansible_python_interpreter: /usr/bin/python3
+rds_user: "{{ lookup('env','RDS_USER') | default('appuser') }}"
+rds_password: "{{ lookup('env','RDS_PASSWORD') | default('ChangeMe123!') }}"
+rds_host: "{{ lookup('env','RDS_HOST') | default('') }}"
+rds_port: "{{ lookup('env','RDS_PORT') | default('5432') }}"
+rds_db: "{{ lookup('env','RDS_DB') | default('appdb') }}"

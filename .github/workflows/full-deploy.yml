@@ -1,0 +1,15 @@
+name: Full Deploy
+on:
+  workflow_dispatch:
+
+jobs:
+  full:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trigger Terraform (call terraform-deploy.yml)
+        uses: peter-evans/workflow-dispatch@v1
+        with:
+          workflow: Terraform Deploy
+          repo: ${{ github.repository }}
+          token: ${{ secrets.GITHUB_TOKEN }}
