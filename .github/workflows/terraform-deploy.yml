@@ -25,12 +25,12 @@ jobs:
         run: |
           terraform init -input=false
           terraform apply -auto-approve -input=false \
+            -var="ami=${{ secrets.AMI_ID }}" \
             -var="public_key_path=${{ secrets.PUBLIC_KEY_PATH }}" \
             -var="private_key_path=${{ secrets.PRIVATE_KEY_PATH }}" \
             -var="db_password=${{ secrets.DB_PASSWORD }}" \
             -var="tfstate_bucket=${{ secrets.TFSTATE_BUCKET }}" \
             -var="tfstate_lock_table=${{ secrets.TFSTATE_LOCK_TABLE }}"
-            -var="ami=${{ secrets.AMI_ID }}"
 
 
       - name: Save outputs
