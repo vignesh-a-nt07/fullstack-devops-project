@@ -1,5 +1,20 @@
-variable "private_subnet_ids" { type = list(string) }
-variable "db_username" {}
-variable "db_password" {}
-variable "project" { default = "fullstack-devops-project" }
-variable "db_name" { default = "appdb" }
+variable "vpc_id" {
+  type = string
+}
+
+variable "private_subnet_ids" {
+  type = list(string)
+}
+
+variable "db_username" {
+  type = string
+}
+
+variable "db_password" {
+  type = string
+  sensitive = true
+}
+
+variable "project" {
+  type = string
+}
