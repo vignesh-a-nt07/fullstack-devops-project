@@ -1,0 +1,44 @@
+name: Terraform Destroy
+on:
+  workflow_dispatch:   # run manually only
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Write SSH keys (optional but safe)
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/deploy_key
+          chmod 600 /tmp/deploy_key
+          echo "${{ secrets.SSH_PUBLIC_KEY }}" > /tmp/deploy_key.pub
+          chmod 644 /tmp/deploy_key.pub
+
+      - name: Terraform init
+        working-directory: terraform
+        run: terraform init -input=false
+
+      - name: Terraform destroy
+        working-directory: terraform
+        run: |
+          terraform destroy -auto-approve -input=false \
+            -var="ami=${{ secrets.AMI_ID }}" \
+            -var="public_key_path=/tmp/deploy_key.pub" \
+            -var="instance_type=t3.micro" \
+            -var="db_password=${{ secrets.DB_PASSWORD }}" \
+            -var="tfstate_bucket=${{ secrets.TFSTATE_BUCKET }}" \
+            -var="tfstate_lock_table=${{ secrets.TFSTATE_LOCK_TABLE }}"
