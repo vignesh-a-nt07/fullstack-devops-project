@@ -36,7 +36,7 @@ module "alb" {
   vpc_id         = module.vpc.vpc_id
   public_subnets = module.vpc.public_subnet_ids
 
-  backend_private_ip = module.ec2.backend_private_ip
+  backend_instance_id = module.ec2.backend_instance_id
 
   project = var.project
 }
