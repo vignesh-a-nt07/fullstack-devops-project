@@ -30,6 +30,8 @@ jobs:
             -var="db_password=${{ secrets.DB_PASSWORD }}" \
             -var="tfstate_bucket=${{ secrets.TFSTATE_BUCKET }}" \
             -var="tfstate_lock_table=${{ secrets.TFSTATE_LOCK_TABLE }}"
+            -var="ami=${{ secrets.AMI_ID }}"
+
 
       - name: Save outputs
         working-directory: terraform
