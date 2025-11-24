@@ -1,9 +1,6 @@
 name: Terraform Deploy
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - 'terraform/**'
 
 jobs:
   terraform:
