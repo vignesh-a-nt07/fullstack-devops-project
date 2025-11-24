@@ -12,7 +12,7 @@ resource "aws_subnet" "public" {
   vpc_id = aws_vpc.this.id
   cidr_block = var.public_subnets_cidrs[count.index]
   map_public_ip_on_launch = true
-  availability_zone = var.azs[0]
+  availability_zone = var.azs[count.index]
   tags = { Name = "${var.project}-public-${count.index}" }
 }
 
@@ -21,7 +21,7 @@ resource "aws_subnet" "private" {
   vpc_id = aws_vpc.this.id
   cidr_block = var.private_subnets_cidrs[count.index]
   map_public_ip_on_launch = false
-  availability_zone = var.azs[0]
+  availability_zone = var.azs[count.index]
   tags = { Name = "${var.project}-private-${count.index}" }
 }
 
