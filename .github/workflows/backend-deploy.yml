@@ -59,12 +59,17 @@ jobs:
         run: |
           ansible-playbook -i ansible/inventory/dev.ini ansible/playbooks/setup_backend.yml --ssh-common-args='-o StrictHostKeyChecking=no'
     
-          
+
       - name: Trigger Frontend Deploy Workflow
-        uses: peter-evans/workflow-dispatch@v1
+        uses: actions/github-script@v7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          workflow: frontend-deploy.yml
-          ref: main
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: "frontend-deploy.yml",
+              ref: "main"
+            });
+
 

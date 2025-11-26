@@ -52,13 +52,19 @@ jobs:
           name: terraform-outputs
           path: terraform-outputs.json
 
+
       - name: Trigger Backend Deploy Workflow
-        uses: peter-evans/workflow-dispatch@v1
+        uses: actions/github-script@v7
         with:
-             token: ${{ secrets.GITHUB_TOKEN }}
-             repository: ${{ github.repository }}
-             workflow: backend-deploy.yml
-             ref: main
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: "backend-deploy.yml",
+              ref: "main"
+            });
+
 
 
 
