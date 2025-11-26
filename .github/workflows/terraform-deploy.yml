@@ -42,12 +42,11 @@ jobs:
             -var="tfstate_bucket=${{ secrets.TFSTATE_BUCKET }}" \
             -var="tfstate_lock_table=${{ secrets.TFSTATE_LOCK_TABLE }}"
 
-      - name: Save outputs
+      - name: Save terraform outputs to file
         working-directory: terraform
         run: terraform output -json > ../terraform-outputs.json
 
-      - name: Upload outputs
-        uses: actions/upload-artifact@v4
-        with:
-          name: terraform-outputs
-          path: ./terraform-outputs.json
+      - name: Upload terraform outputs to S3
+        run: |
+          aws s3 cp ../terraform-outputs.json \
+            s3://${{ secrets.TFSTATE_BUCKET }}/outputs/terraform-outputs.json

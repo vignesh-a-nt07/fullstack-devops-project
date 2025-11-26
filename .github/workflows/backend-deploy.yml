@@ -8,19 +8,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check files
-        run: ls -R .
-
-      - name: Download infra outputs
-        uses: actions/download-artifact@v4
-        with:
-          name: terraform-outputs
-          path: .
-
-      - name: Extract artifact
+      - name: Download terraform outputs from S3
         run: |
-            unzip terraform-outputs.zip
-
+          aws s3 cp s3://${{ secrets.TFSTATE_BUCKET }}/outputs/terraform-outputs.json ./terraform-outputs.json
+          echo "Downloaded terraform outputs:"
+          cat terraform-outputs.json
 
       - name: Prepare inventory and SSH key
         run: |
