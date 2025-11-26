@@ -17,6 +17,11 @@ jobs:
           name: terraform-outputs
           path: .
 
+      - name: Extract artifact
+        run: |
+            unzip terraform-outputs.zip
+
+
       - name: Prepare inventory and SSH key
         run: |
           python3 - <<'PY'
