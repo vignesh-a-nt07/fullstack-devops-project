@@ -46,11 +46,19 @@ jobs:
         working-directory: terraform
         shell: bash
         run: |
-          set +x
-          tmp_output=$(mktemp)
-          terraform output -json > "$tmp_output"
-          mv "$tmp_output" terraform-outputs.json
-          set -x
+          # generate raw output
+          terraform output -json > raw.json
+
+          # if first line is not '{', remove it
+          if ! head -n 1 raw.json | grep -q '{'; then
+            tail -n +2 raw.json > terraform-outputs.json
+          else
+            mv raw.json terraform-outputs.json
+          fi
+
+          echo "Final cleaned JSON:"
+          cat terraform-outputs.json
+
 
       - name: Upload terraform outputs to S3
         run: |
