@@ -24,23 +24,25 @@ jobs:
 
       - name: Prepare inventory and SSH key
         run: |
-          python3 - <<'PY'
-          import json, os
+            python3 - <<'PY'
+            import json, os
 
-          o = json.load(open('terraform-outputs.json'))
-          frontend_ip = o['frontend_public_ip']['value']
-          backend_ip = o['backend_private_ip']['value']
+            o = json.load(open('terraform-outputs.json'))
 
-          inv = f"""[frontend]
-          frontend ansible_host={frontend_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/deploy_key
+            frontend_ip = o['frontend_public_ip']
+            backend_ip  = o['backend_private_ip']
 
-          [backend]
-          backend ansible_host={backend_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/deploy_key
-          """
+            inv = f"""[frontend]
+            frontend ansible_host={frontend_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/deploy_key
 
-          open('ansible/inventory/dev.ini','w').write(inv)
-          print('Inventory created')
-          PY
+            [backend]
+            backend ansible_host={backend_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/deploy_key
+            """
+
+            os.makedirs('ansible/inventory', exist_ok=True)
+            open('ansible/inventory/dev.ini','w').write(inv)
+            print('Inventory created')
+            PY
 
 
       - name: Add SSH key
