@@ -46,12 +46,14 @@ jobs:
         working-directory: terraform
         shell: bash
         run: |
-          set +x        # disable GitHub command echo
-          terraform output -json > terraform-outputs.json
-          set -x        # re-enable echo
+          set +x
+          tmp_output=$(mktemp)
+          terraform output -json > "$tmp_output"
+          mv "$tmp_output" terraform-outputs.json
+          set -x
 
       - name: Upload terraform outputs to S3
         run: |
-            aws s3 cp terraform/terraform-outputs.json \
-              s3://${{ secrets.TFSTATE_BUCKET }}/outputs/terraform-outputs.json
+          aws s3 cp terraform/terraform-outputs.json \
+            s3://${{ secrets.TFSTATE_BUCKET }}/outputs/terraform-outputs.json
 
