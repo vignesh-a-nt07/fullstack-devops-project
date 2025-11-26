@@ -42,18 +42,16 @@ jobs:
             -var="tfstate_bucket=${{ secrets.TFSTATE_BUCKET }}" \
             -var="tfstate_lock_table=${{ secrets.TFSTATE_LOCK_TABLE }}"
 
-      - name: Save terraform outputs cleanly
+      - name: Copy terraform outputs (clean)
         working-directory: terraform
-        shell: bash
         run: |
-          terraform output -json | jq -r '.' > terraform-outputs.json
-          echo "Final cleaned JSON:"
-          cat terraform-outputs.json
-
-
+          cp terraform-outputs.json ../terraform-outputs.json
+          echo "Clean JSON:"
+          cat ../terraform-outputs.json
 
       - name: Upload terraform outputs to S3
         run: |
-          aws s3 cp terraform/terraform-outputs.json \
+          aws s3 cp terraform-outputs.json \
             s3://${{ secrets.TFSTATE_BUCKET }}/outputs/terraform-outputs.json
+
           

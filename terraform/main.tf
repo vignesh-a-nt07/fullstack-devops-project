@@ -53,6 +53,18 @@ module "rds" {
   project = var.project
 }
 
+resource "local_file" "outputs" {
+  content = jsonencode({
+    alb_dns_name       = module.alb.alb_dns_name
+    backend_private_ip = module.ec2.backend_private_ip
+    frontend_public_ip = module.ec2.frontend_public_ip
+    key_name           = aws_key_pair.deployer.key_name
+    rds_endpoint       = module.rds.rds_endpoint
+  })
+  filename = "${path.module}/terraform-outputs.json"
+}
+
+
 
 
 
