@@ -50,6 +50,17 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/deploy_key
           chmod 600 /tmp/deploy_key
 
+      - name: Debug current directory
+        run: |
+          echo "PWD:"
+          pwd
+          echo "ROOT LIST:"
+          ls -la
+          echo "LIST ../"
+          ls -la ..
+          echo "LIST ../../"
+          ls -la ../..
+
       - name: Run tests
         working-directory: ./backend
         run: |
