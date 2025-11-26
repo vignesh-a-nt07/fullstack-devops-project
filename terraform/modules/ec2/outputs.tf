@@ -5,3 +5,11 @@ output "frontend_public_ip" {
 output "backend_private_ip" {
   value = aws_instance.backend.private_ip
 }
+
+output "backend_instance_id" {
+  value = aws_instance.backend.id
+}
+
+output "frontend_instance_id" {
+  value = aws_instance.frontend.id
+}
