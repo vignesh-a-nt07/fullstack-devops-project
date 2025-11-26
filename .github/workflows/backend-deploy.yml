@@ -58,3 +58,13 @@ jobs:
           RDS_DB: ${{ secrets.DB_NAME }}
         run: |
           ansible-playbook -i ansible/inventory/dev.ini ansible/playbooks/setup_backend.yml --ssh-common-args='-o StrictHostKeyChecking=no'
+    
+          
+      - name: Trigger Frontend Deploy Workflow
+        uses: peter-evans/workflow-dispatch@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          workflow: frontend-deploy.yml
+          ref: main
+

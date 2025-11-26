@@ -52,3 +52,13 @@ jobs:
           name: terraform-outputs
           path: terraform-outputs.json
 
+      - name: Trigger Backend Deploy Workflow
+        uses: peter-evans/workflow-dispatch@v1
+        with:
+             token: ${{ secrets.GITHUB_TOKEN }}
+             repository: ${{ github.repository }}
+             workflow: backend-deploy.yml
+             ref: main
+
+
+
