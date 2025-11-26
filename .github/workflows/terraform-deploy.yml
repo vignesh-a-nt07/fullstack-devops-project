@@ -52,7 +52,8 @@ jobs:
 
       - name: Upload terraform outputs to S3
         run: |
-          aws s3 cp terraform-outputs.json \
+          aws s3 cp terraform/terraform-outputs.json \
             s3://${{ secrets.TFSTATE_BUCKET }}/outputs/terraform-outputs.json
+
 
           
