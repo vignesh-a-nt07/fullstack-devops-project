@@ -7,6 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
+      TF_CLI_ARGS: "-no-color"
+      TERRAFORM_CLI_CONFIG_FILE: ""
 
     steps:
       - uses: actions/checkout@v4
@@ -21,12 +23,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # ⭐ WRITE SSH KEYS (missing in your workflow)
       - name: Write SSH keys
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/deploy_key
           chmod 600 /tmp/deploy_key
-
           echo "${{ secrets.SSH_PUBLIC_KEY }}" > /tmp/deploy_key.pub
           chmod 644 /tmp/deploy_key.pub
 
@@ -56,4 +56,4 @@ jobs:
         run: |
           aws s3 cp terraform/terraform-outputs.json \
             s3://${{ secrets.TFSTATE_BUCKET }}/outputs/terraform-outputs.json
-
+          
