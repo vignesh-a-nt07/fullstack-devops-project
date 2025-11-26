@@ -5,58 +5,42 @@ on:
 jobs:
   build-test-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
-      # 🔥 Download terraform output artifact (ZIP auto-unzipped)
       - name: Download infra outputs
         uses: actions/download-artifact@v4
         with:
-          pattern: terraform-outputs*
-          path: .
-          merge-multiple: true
+            pattern: terraform-outputs*
+            path: .
+            merge-multiple: true
 
-      # 🧪 Debug → show what files were downloaded
-      - name: List downloaded files
-        run: ls -R .
-
-      # 🛠 Generate Ansible inventory dynamically
       - name: Prepare inventory and SSH key
         run: |
-          python3 - << 'PY'
+          python3 - <<'PY'
           import json, os
 
-          # Load terraform outputs
-          with open("terraform-outputs.json") as f:
-              o = json.load(f)
+          o = json.load(open('terraform-outputs.json'))
+          frontend_ip = o['frontend_public_ip']['value']
+          backend_ip = o['backend_private_ip']['value']
 
-          frontend_ip = o["frontend_public_ip"]["value"]
-          backend_ip  = o["backend_private_ip"]["value"]
+          inv = f"""[frontend]
+          frontend ansible_host={frontend_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/deploy_key
 
-          # Create inventory
-          inventory = f"""
-[frontend]
-frontend ansible_host={frontend_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/deploy_key
+          [backend]
+          backend ansible_host={backend_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/deploy_key
+          """
 
-[backend]
-backend ansible_host={backend_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/deploy_key
-"""
-
-          os.makedirs("ansible/inventory", exist_ok=True)
-          with open("ansible/inventory/dev.ini", "w") as f:
-              f.write(inventory)
-
-          print("✔ Inventory created successfully")
+          open('ansible/inventory/dev.ini','w').write(inv)
+          print('Inventory created')
           PY
 
-      # 🔐 Add SSH key
+
       - name: Add SSH key
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/deploy_key
           chmod 600 /tmp/deploy_key
 
-      # 🧪 Run backend tests
       - name: Run tests
         run: |
           cd backend
@@ -64,29 +48,26 @@ backend ansible_host={backend_ip} ansible_user=ubuntu ansible_ssh_private_key_fi
           pytest || true
           cd ..
 
-      # 📦 Install Ansible
       - name: Install Ansible
         run: |
           sudo apt-get update
           sudo apt-get install -y python3-pip
           pip3 install ansible
 
-      # 🗄 Show RDS endpoint for debugging
       - name: Set RDS env vars
         run: |
-          python3 - << 'PY'
+          python3 - <<'PY'
           import json
           o = json.load(open('terraform-outputs.json'))
-          print("RDS Endpoint:", o.get("rds_endpoint", {}).get("value", "not_found"))
+          rds = o.get('rds_endpoint', {'value':''})['value']
+          print(rds)
           PY
 
-      # 🚀 Deploy backend using Ansible
       - name: Run Ansible backend playbook
         env:
           RDS_PASSWORD: ${{ secrets.DB_PASSWORD }}
           RDS_USER: ${{ secrets.DB_USER }}
           RDS_DB: ${{ secrets.DB_NAME }}
         run: |
-          ansible-playbook -i ansible/inventory/dev.ini \
-            ansible/playbooks/setup_backend.yml \
-            --ssh-common-args='-o StrictHostKeyChecking=no'
+          ansible-playbook -i ansible/inventory/dev.ini ansible/playbooks/setup_backend.yml --ssh-common-args='-o StrictHostKeyChecking=no'
+    
