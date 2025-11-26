@@ -10,7 +10,8 @@ jobs:
 
       - name: Download infra outputs
         uses: actions/download-artifact@v4
-        with: { name: terraform-outputs }
+        with:
+            name: terraform-outputs
 
       - name: Prepare inventory and SSH key
         run: |
