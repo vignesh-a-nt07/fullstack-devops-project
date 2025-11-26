@@ -42,12 +42,19 @@ jobs:
             -var="tfstate_bucket=${{ secrets.TFSTATE_BUCKET }}" \
             -var="tfstate_lock_table=${{ secrets.TFSTATE_LOCK_TABLE }}"
 
-      - name: Copy terraform outputs (clean)
+      - name: Save terraform outputs cleanly
         working-directory: terraform
+        shell: bash
         run: |
-          cp terraform-outputs.json ../terraform-outputs.json
-          echo "Clean JSON:"
-          cat ../terraform-outputs.json
+          sudo apt-get update -y
+          sudo apt-get install -y jq
+
+          # Get PURE JSON only — removes any noise or Terraform logs
+          terraform output -json 2>/dev/null | jq -c . > terraform-outputs.json
+
+          echo "Generated clean JSON:"
+          cat terraform-outputs.json
+
 
       - name: Upload terraform outputs to S3
         run: |
