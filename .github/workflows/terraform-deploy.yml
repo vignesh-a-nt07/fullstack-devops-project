@@ -46,8 +46,9 @@ jobs:
         working-directory: terraform
         shell: bash
         run: |
-          terraform output -json > terraform-outputs.json 2>/dev/null
-
+          set +x        # disable GitHub command echo
+          terraform output -json > terraform-outputs.json
+          set -x        # re-enable echo
 
       - name: Upload terraform outputs to S3
         run: |
