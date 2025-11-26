@@ -11,9 +11,8 @@ jobs:
       - name: Download infra outputs
         uses: actions/download-artifact@v4
         with:
-            pattern: terraform-outputs*
-            path: .
-            merge-multiple: true
+          name: terraform-outputs
+          path: .
 
       - name: Prepare inventory and SSH key
         run: |
