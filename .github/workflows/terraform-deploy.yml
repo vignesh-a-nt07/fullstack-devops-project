@@ -44,9 +44,13 @@ jobs:
 
       - name: Save terraform outputs to file
         working-directory: terraform
-        run: terraform output -json > ../terraform-outputs.json
+        run: |
+            terraform output -json > terraform-outputs.json
+            echo "Saved terraform outputs:"
+            cat terraform-outputs.json
 
       - name: Upload terraform outputs to S3
         run: |
-          aws s3 cp ../terraform-outputs.json \
-            s3://${{ secrets.TFSTATE_BUCKET }}/outputs/terraform-outputs.json
+            aws s3 cp terraform/terraform-outputs.json \
+              s3://${{ secrets.TFSTATE_BUCKET }}/outputs/terraform-outputs.json
+
