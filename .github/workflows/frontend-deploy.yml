@@ -5,16 +5,8 @@ on:
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Configure AWS
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Download terraform outputs from S3
         run: |
@@ -25,26 +17,26 @@ jobs:
       - name: Prepare inventory and SSH key
         run: |
           python3 - <<'PY'
-import json
-o = json.load(open('terraform-outputs.json'))
-frontend_ip = o['frontend_public_ip']
+          import json
+          o = json.load(open('terraform-outputs.json'))
+          frontend_ip = o['frontend_public_ip']
 
-inv = f"""[frontend]
-frontend ansible_host={frontend_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/deploy_key
-"""
+          inv = f"""[frontend]
+          frontend ansible_host={frontend_ip} ansible_user=ubuntu ansible_ssh_private_key_file=/tmp/deploy_key
+          """
 
-open('ansible/inventory/dev.ini','w').write(inv)
-print("Inventory created")
-PY
-
+          open('ansible/inventory/dev.ini','w').write(inv)
+          print("Inventory created")
+          PY
+          
       - name: Add SSH key
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/deploy_key
           chmod 600 /tmp/deploy_key
 
       - name: Build frontend
-        working-directory: ./frontend
         run: |
+          cd frontend
           npm ci
           npm run build
 
