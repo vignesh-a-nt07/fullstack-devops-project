@@ -1,6 +1,9 @@
+---
 - hosts: backend
+  become: yes
+
   vars:
-    backend_source_path: "{{ playbook_dir }}/../../backend"
+    backend_code_path: "{{ playbook_dir }}/../../backend"
 
   roles:
-    - role: backend
+    - backend
