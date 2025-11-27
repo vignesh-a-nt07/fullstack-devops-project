@@ -2,6 +2,7 @@
     name: common
 
 - name: Create backend directory
+  become: yes
   file:
     path: /opt/backend
     state: directory
@@ -31,9 +32,11 @@
     mode: '0644'
 
 - name: Reload systemd
+  become: yes
   command: systemctl daemon-reload
 
 - name: Enable and start backend
+  become: yes
   systemd:
     name: backend
     state: restarted
