@@ -53,6 +53,12 @@ jobs:
         run: |
           npm pkg delete scripts.prepare || true
 
+      - name: Create frontend env file
+        working-directory: ./frontend
+        run: |
+          echo "VITE_API_URL=/api" > .env.production
+          echo ".env.production created"
+
       - name: Build frontend
         working-directory: ./frontend
         run: |
