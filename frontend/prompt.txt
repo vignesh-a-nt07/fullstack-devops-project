@@ -1,0 +1,31 @@
+Create a Simple Login System using Vite with React
+
+Login Page:
+Users enter username and password.
+On successful login, a session token is stored in sessionStorage.
+If the token is invalid or expired, redirect to the login page.
+If a valid session exists, redirect from /login to /.
+
+Dashboard Page:
+After login, users are redirected to the dashboard (/).
+The dashboard fetches user data asynchronously from a third-party API.
+Includes loading states and error handling for data fetch.
+
+Session Management:
+Session token is used to check authentication.
+If the token is expired or invalid, redirect to /login.
+Logout clears the session token and redirects to /login.
+
+Modular Components:
+Sidebar, Header, and Footer are reusable and easily modifiable components.
+
+Routes Configuration:
+All routes are stored in a central config file (routes.ts).
+/ is the dashboard (protected route), /login is the login page.
+
+Environment Variables:
+Static variables (API URLs) are stored in .env and accessed via import.meta.env.
+
+API Handling:
+All API requests are managed in separate files under api (e.g., auth.ts).
+API functions (login, fetch user data, etc.) are imported and used in components.
