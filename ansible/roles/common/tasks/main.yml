@@ -1,13 +1,4 @@
 ---
-- name: Wait for apt lock release
-  become: yes
-  shell: |
-    while sudo fuser /var/lib/apt/lists/lock >/dev/null 2>&1 || \
-          sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do
-        echo "APT lock detected. Waiting..."
-        sleep 5
-    done
-
 - name: Update apt cache
   become: yes
   apt:
