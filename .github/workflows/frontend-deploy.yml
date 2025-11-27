@@ -42,11 +42,17 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/deploy_key
           chmod 600 /tmp/deploy_key
 
+      - name: Disable Husky (CI safe build)
+        working-directory: ./frontend
+        run: |
+          npm pkg delete scripts.prepare || true
+
       - name: Build frontend
         working-directory: ./frontend
         run: |
           npm ci
           npm run build
+
 
       - name: Install Ansible
         run: |
