@@ -6,9 +6,10 @@ After=network.target
 User=ubuntu
 Group=ubuntu
 WorkingDirectory=/opt/backend
-Environment="DATABASE_URL=postgresql://{{ rds_user }}:{{ rds_password }}@{{ rds_host }}:{{ rds_port }}/{{ rds_db }}"
+Environment="DATABASE_URL=postgresql://{{ rds_user }}:{{ rds_password }}@{{ rds_endpoint }}:5432/{{ rds_db }}"
 ExecStart=/opt/backend/venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
-Restart=on-failure
+Restart=always
+RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
