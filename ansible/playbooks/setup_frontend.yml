@@ -4,12 +4,7 @@
 
   vars:
     frontend_build_path: "{{ lookup('env', 'FRONTEND_BUILD_PATH') }}"
-
-
-  tasks:
-    - name: Set backend_private_ip var
-      set_fact:
-        backend_private_ip: "{{ hostvars['backend'].ansible_host }}"
+    backend_private_ip: "{{ hostvars['backend'].ansible_host }}"
 
   roles:
     - web
