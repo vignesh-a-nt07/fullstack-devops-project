@@ -3,7 +3,8 @@
   become: yes
 
   vars:
-    frontend_build_path: ../frontend/dist
+    frontend_build_path: "{{ lookup('env', 'FRONTEND_BUILD_PATH') }}"
+
 
   tasks:
     - name: Set backend_private_ip var

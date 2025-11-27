@@ -19,9 +19,11 @@
   copy:
     src: "{{ frontend_build_path }}/"
     dest: /var/www/frontend/
-    owner: www-data
-    group: www-data
-    mode: 0644
+    owner: ubuntu
+    group: ubuntu
+    mode: '0644'
+  remote_src: false
+
 
 - name: Deploy nginx config
   template:

@@ -58,6 +58,10 @@ jobs:
         run: |
           npm ci
           npm run build
+        
+      - name: Export build path
+        run: echo "FRONTEND_BUILD_PATH=$(pwd)/frontend/dist" >> $GITHUB_ENV
+
 
 
       - name: Install Ansible
