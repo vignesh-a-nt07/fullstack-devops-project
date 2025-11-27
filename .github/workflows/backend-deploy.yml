@@ -77,9 +77,10 @@ jobs:
           python3 - <<'PY'
           import json
           o = json.load(open('terraform-outputs.json'))
-          rds = o.get('rds_endpoint', {'value':''})['value']
-          print(rds)
+          rds = o.get('rds_endpoint', '')
+          print("RDS endpoint:", rds)
           PY
+
 
       - name: Run Ansible backend playbook
         env:
