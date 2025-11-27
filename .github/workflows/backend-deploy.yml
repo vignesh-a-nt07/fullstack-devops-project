@@ -43,6 +43,21 @@ jobs:
           print("Inventory created")
           PY
 
+      - name: Export RDS endpoint to env vars
+        run: |
+          python3 - <<'PY'
+          import json, os
+          o = json.load(open('terraform-outputs.json'))
+          
+          endpoint = o['rds_endpoint']
+
+          with open(os.environ["GITHUB_ENV"], "a") as f:
+              f.write(f"RDS_ENDPOINT={endpoint}\n")
+
+          print("Exported RDS_ENDPOINT:", endpoint)
+          PY
+
+
       - name: Add SSH key
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > /tmp/deploy_key
@@ -87,6 +102,7 @@ jobs:
           RDS_PASSWORD: ${{ secrets.DB_PASSWORD }}
           RDS_USER: ${{ secrets.DB_USER }}
           RDS_DB: ${{ secrets.DB_NAME }}
+          RDS_ENDPOINT: ${{ secrets.DB_ENDPOINT }}
         run: |
           ansible-playbook -i ansible/inventory/dev.ini ansible/playbooks/setup_backend.yml --ssh-common-args='-o StrictHostKeyChecking=no'
     
