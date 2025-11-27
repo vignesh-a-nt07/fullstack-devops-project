@@ -22,7 +22,7 @@
     owner: ubuntu
     group: ubuntu
     mode: '0644'
-  remote_src: false
+    remote_src: false
 
 
 - name: Deploy nginx config
