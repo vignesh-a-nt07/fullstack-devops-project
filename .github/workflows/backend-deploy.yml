@@ -102,7 +102,7 @@ jobs:
           RDS_PASSWORD: ${{ secrets.DB_PASSWORD }}
           RDS_USER: ${{ secrets.DB_USER }}
           RDS_DB: ${{ secrets.DB_NAME }}
-          RDS_ENDPOINT: ${{ secrets.DB_ENDPOINT }}
+          RDS_ENDPOINT: ${{ env.RDS_ENDPOINT }}
         run: |
           ansible-playbook -i ansible/inventory/dev.ini ansible/playbooks/setup_backend.yml --ssh-common-args='-o StrictHostKeyChecking=no'
     
