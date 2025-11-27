@@ -3,11 +3,11 @@
   become: yes
 
   vars:
-  rds_user: "{{ lookup('env', 'RDS_USER') }}"
-  rds_password: "{{ lookup('env', 'RDS_PASSWORD') }}"
-  rds_db: "{{ lookup('env', 'RDS_DB') }}"
-  rds_endpoint: "{{ lookup('env', 'RDS_ENDPOINT') }}"
-
+    backend_code_path: "{{ playbook_dir }}/../../backend"
+    rds_user: "{{ lookup('env', 'RDS_USER') }}"
+    rds_password: "{{ lookup('env', 'RDS_PASSWORD') }}"
+    rds_db: "{{ lookup('env', 'RDS_DB') }}"
+    rds_endpoint: "{{ lookup('env', 'RDS_ENDPOINT') }}"
 
   roles:
     - backend
