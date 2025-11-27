@@ -1,12 +1,12 @@
 module "vpc" {
   source = "./modules/vpc"
 
-  cidr = "222.0.0.0/16"
+  cidr = "10.0.0.0/16"
 
   azs = ["us-east-1a", "us-east-1b"] 
 
-  public_subnets_cidrs  = ["222.0.1.0/24", "222.0.3.0/24"]  # FIXED
-  private_subnets_cidrs = ["222.0.2.0/24", "222.0.4.0/24"]  # FIXED
+  public_subnets_cidrs  = ["10.0.1.0/24", "10.0.3.0/24"]  # FIXED
+  private_subnets_cidrs = ["10.0.2.0/24", "10.0.4.0/24"]  # FIXED
 
   project = var.project
 }
